@@ -1,4 +1,8 @@
 import sys
+from src.parser import process_data
+from src.database import connect_db
+from src.core.rule_engine import evaluate_rule
+
 def init_project ():
     """Función para inicializar el proyecto, configurando el entorno y preparando los recursos necesarios."""
     print ("[INFO] Inicializando el proyecto...")
