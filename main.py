@@ -1,9 +1,10 @@
+import sys
 def init_project ():
-    """Función para inicializar el proyecto, configurando el entorno y preparando los recursos necesarios.
-    """
+    """Función para inicializar el proyecto, configurando el entorno y preparando los recursos necesarios."""
     print ("[INFO] Inicializando el proyecto...")
     # Aquí irá más adelante la lectura de archivos o conexiones a bases de datos
     return True
+
 def main():
     print("=========================================")
     print("       LEXDATA - SYSTEM INITIALIZED      ")
@@ -14,5 +15,6 @@ def main():
     else:
         print("[ERROR] No se pudo inicializar el proyceto.")
         sys.exit(1)
+
 if __name__=="__main__":
     main()
