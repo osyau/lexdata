@@ -1,4 +1,4 @@
-# LexData 🚀 | Auditoría Inteligente de Datos Empresariales
+# LexData 🔍 | Auditoría Inteligente de Datos Empresariales
 
 **LexData** es una plataforma de software desarrollada en Python diseñada para la auditoría inteligente, análisis y detección de anomalías en grandes volúmenes de datos empresariales. El sistema integra principios de Ciencia de Datos, Estadística Aplicada y Motores de Reglas para identificar patrones irregulares, automatizar el control de calidad de la información y generar reportes analíticos de alto impacto.
 
@@ -26,14 +26,4 @@ Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexDat
 * **Control de Versiones:** Git & GitHub
 
 ---
-
-## 📦 Configuración e Instalación
-
-Para replicar este entorno de desarrollo localmente, ejecuta los siguientes comandos en tu terminal (Git Bash o consola Linux):
-
-### 1. Clonar el repositorio
-```bash
-git clone [https://github.com/TU_USUARIO_DE_GITHUB/lexdata.git](https://github.com/TU_USUARIO_DE_GITHUB/lexdata.git)"
-cd lexdata
-
 	
