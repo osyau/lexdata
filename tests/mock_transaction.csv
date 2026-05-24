@@ -1,4 +1,4 @@
-client_id, amount, transaction_date
+client_id,amount,transaction_date
 1001, 250.50, 2026-05-20
 ,120.00,2026-05-21
 1002, , 2026-05-22
