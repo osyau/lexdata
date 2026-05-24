@@ -89,6 +89,7 @@ Actualmente, **LexData** se encuentra en su fase inicial de desarrollo. El avanc
 - [x] Inicialización del repositorio Git y estructuración del portafolio.
 - [x] Configuración del entorno virtual (`venv`) y definición de dependencias base.
 - [x] Diseño de la arquitectura de software por capas y árbol de directorios.
+- [x] archivo Parseador definido.
 - [ ] Creación de scripts SQL iniciales (Modelado DDL para persistencia de datos).
 - [ ] Configuración del punto de entrada de la aplicación (`main.py`) y testing de conexión.
 

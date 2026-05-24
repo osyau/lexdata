@@ -1,5 +1,5 @@
 import sys
-from src.parser import process_data
+from src.parser import parse_data
 from src.database import connect_db
 from src.core.rule_engine import evaluate_rule
 
@@ -7,6 +7,7 @@ def init_project ():
     """Función para inicializar el proyecto, configurando el entorno y preparando los recursos necesarios."""
     print ("[INFO] Inicializando el proyecto...")
     # Aquí irá más adelante la lectura de archivos/conexiones database
+    # Si todo está listo, permitimos el arranque
     return True
 
 def main():
