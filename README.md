@@ -1,62 +1,84 @@
 # LexData | Auditoría Inteligente de Datos Empresariales
-LexData es una plataforma de software desarrollada en Python diseñada para la auditoría inteligente, análisis y detección de anomalías en grandes volúmenes de datos empresariales. El sistema integra principios de Ciencia de Datos, Estadística Aplicada y Motores de Reglas para identificar patrones irregulares, automatizar el control de calidad de la información y generar reportes analíticos de alto impacto.
+LexData es una plataforma de software desarrollada en Python diseñada para la auditoría inteligente, análisis y detección de anomalías en datos transaccionales empresariales. El sistema integra un motor de reglas de negocio configurable y un detector estadístico de anomalías (z-score) para identificar patrones irregulares, automatizar el control de calidad de la información y generar reportes de auditoría.
 
-El proyecto está construido bajo una arquitectura modular por capas, priorizando el aislamiento de dependencias mediante entornos virtuales (`venv`) y un control de versiones estricto.
+El proyecto está construido bajo una arquitectura modular por capas, con persistencia real en SQLite, configuración centralizada por variables de entorno, y una suite de tests automatizados con `pytest`.
 
 ---
 
 ## Arquitectura del Sistema (Capas)
-Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexData** se estructura en las siguientes capas de software:
 
-*   **A. Capa de Base de Datos (DATABASE):** Persistencia y gestión estructurada de datos relacionales, utilizando operaciones SQL optimizadas (DDL, DML, TCL) para asegurar la integridad transaccional.
-*   **B. Motor de Reglas:** Lógica de negocio centralizada en Python que evalúa las condiciones, restricciones y políticas empresariales predefinidas sobre los conjuntos de datos.
-*   **C. Detección de Anomalías:** Componente enfocado en aplicar modelos estadísticos y algoritmos analíticos para descubrir desviaciones, posibles fraudes o registros corruptos en el sistema.
-*   **D. Dashboard & Reportes:** Módulo de visualización encargado de transformar los datos auditados en paneles interactivos y métricas clave para la toma de decisiones.
-  
-	[ Capa D: Dashboard / UI ]
-				│
-				▼
-	[ Capa B: Motor de Reglas ] ◄───(Usa los modelos de)───► [ Capa C: Detección Estadistica ]
-				│
-				▼
-	[ Capa A: Acceso a Datos / SQL ]
+*   **A. Capa de Base de Datos:** SQLite real (`src/database/`). El schema (`schema.sql`), los modelos (`models.py`) y los repositorios parametrizados (`repositories.py`) están implementados; no hay SQL construido por concatenación en ningún punto.
+*   **B. Motor de Reglas:** reglas de negocio configurables (`src/core/rule_engine.py`), definidas como datos en `src/config/settings.py` en vez de funciones fijas. Cada regla evaluada que se cumple genera una alerta persistida.
+*   **C. Detección de Anomalías:** primer detector estadístico real (`src/core/anomaly_detect.py`), outliers de monto por z-score sobre el lote procesado.
+*   **D. Dashboard & Reportes:** dos salidas — un reporte agregado exportable a CSV/consola (`src/core/report.py`) y un dashboard de solo lectura en Streamlit (`src/dashboard/app.py`) sobre lo ya persistido.
+
+Todas las capas están conectadas de punta a punta: no hay datos simulados ni conexiones mockeadas.
+
+```
+  [ Capa D: Dashboard (Streamlit) / Reportes (CSV) ]
+                    ▲
+                    │  lee lo ya persistido
+                    │
+  [ Capa B: Motor de Reglas ] ◄──(evalúa junto a)──► [ Capa C: Detección de Anomalías ]
+                    │                                            │
+                    └──────────────── persisten alertas ─────────┘
+                    ▼
+  [ Capa A: SQLite — transactions / rule_alerts / rejected_rows ]
+                    ▲
+                    │
+  [ Parser + cuarentena de datos invalidos (src/utils/parser.py) ]
+                    ▲
+                    │
+              [ CSV de entrada ]
+```
+
+Filas con `client_id`, `amount` o `transaction_date` inválidos no se corrigen ni se descartan en silencio: se separan en cuarentena (`rejected_rows`) con el motivo exacto del rechazo.
 
 ---
 
 ## Stack Tecnológico
-*   **Lenguaje Base:** Python 3.x
-*   **Gestión de Datos:** SQL Transaccional (PostgreSQL / MySQL / SQLite)
-*   **Core Científico:** Ciencia de Datos, Estadística Aplicada y Algoritmos de Detección
-*   **Visualización:** Dashboards y Reportes Analíticos
-*   **Control de Versiones:** Git & GitHub
+*   **Lenguaje base:** Python 3.13
+*   **Datos:** `pandas` 3.0.3, `numpy` 2.4.6
+*   **Persistencia:** SQLite (`sqlite3`, estándar de Python) — sin ORM
+*   **Configuración:** `python-dotenv` (variables de entorno, ver `.env.example`)
+*   **Dashboard:** `Streamlit`
+*   **Tests:** `pytest`
+*   **CLI:** `argparse` + `logging` (estándar de Python)
+*   **Control de versiones:** Git & GitHub
 
 ---
 
 ## Estructura del Proyecto
 ```text
-	LEXDATA/
-			│
-			├── data/                       # ← NUEVA: Carpeta para datos del proyecto
-			│   └── mock_transaction.csv    # Your mock file para probar el parser sin tocar la DB
-			│
-			├── src/                        # Todo el código fuente ejecutable
-			│   ├── __init__.py
-			│   ├── main.py                 
-			│   ├── config/                 
-			│   ├── core/                   
-			│   ├── database/               # Aquí va SOLO código de persistencia (scripts SQL, conexión)
-			│   └── utils/                  
-			│       ├── __init__.py
-			│       └── parser.py           # Leerá el CSV desde la carpeta data/
-			│
-			├── venv/                       
-			├── .env                        
-			├── .gitignore                  
-			├── README.md                   
-			├── requirements.txt            
-			└── run.py
+LEXDATA/
+├── src/
+│   ├── main.py                     # punto de entrada CLI
+│   ├── config/
+│   │   └── settings.py             # config centralizada (env vars, reglas, umbrales)
+│   ├── core/
+│   │   ├── rule_engine.py          # motor de reglas configurable
+│   │   ├── anomaly_detect.py       # detector de anomalias (z-score)
+│   │   └── report.py               # agregacion de reportes + export CSV
+│   ├── database/
+│   │   ├── connection.py           # conexion SQLite + auto-aplicacion de schema
+│   │   ├── schema.sql              # DDL: transactions, rule_alerts, rejected_rows
+│   │   ├── models.py                # dataclasses: Transaction, RuleAlert, RejectedRow
+│   │   └── repositories.py         # acceso a datos parametrizado
+│   ├── dashboard/
+│   │   └── app.py                  # dashboard Streamlit (solo lectura)
+│   └── utils/
+│       ├── parser.py               # parseo + cuarentena de filas invalidas
+│       └── logging_config.py       # configuracion de logging del proyecto
+├── tests/                          # suite pytest (parser, repos, reglas, anomalias, CLI, reportes)
+├── data/                           # base SQLite local (gitignored, se crea automaticamente)
+├── .env.example                    # plantilla de configuracion
+├── pytest.ini
+├── requirements.txt
+└── README.md
 ```
+
 ---
+
 ## Instalación y Uso
 
 ### Prerrequisitos
@@ -64,37 +86,64 @@ Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexDat
 * Git
 
 ### Clonar e Instalar
-1. Clona el repositorio:
-   
 ```bash
-   git clone [https://github.com/osyau/lexdata.git](https://github.com/osyau/lexdata.git)
-   cd lexdata
-```
-2. Crea y activa el entorno virtual:
-   python -m venv venv
-   # En Windows (Git Bash, CMD o PowerShell):
-   .\venv\Scripts\activate
-   # En Linux / macOS:
-   source venv/Scripts/activate
+git clone https://github.com/osyau/lexdata.git
+cd lexdata
+python -m venv venv
+# Windows (Git Bash, CMD o PowerShell):
+.\venv\Scripts\activate
+# Linux / macOS:
+source venv/bin/activate
 
-3. Instala las dependencias (próximamente):
-   pip install -r requirements.txt
+pip install -r requirements.txt
+```
+
+### Configuración (opcional)
+```bash
+cp .env.example .env
+```
+Todas las variables tienen un valor por defecto razonable; `.env` solo hace falta si querés ajustar rutas, umbrales de reglas o el nivel de log. Ver `.env.example` para la lista completa.
+
+### Correr la auditoría (CLI)
+```bash
+python -m src.main tests/mock_transaction.csv
+# o, para exportar el reporte agregado:
+python -m src.main tests/mock_transaction.csv --export reporte.csv
+python -m src.main --help
+```
+Esto parsea el CSV, separa filas inválidas en cuarentena, evalúa las reglas y el detector de anomalías, y persiste todo en `data/lexdata.db`.
+
+### Ver el dashboard
+```bash
+streamlit run src/dashboard/app.py
+```
+
+### Correr los tests
+```bash
+pytest
+```
 
 ---
 
-## Estado del Proyecto & Roadmap
+## Estado del Proyecto
 
-Actualmente, **LexData** se encuentra en su fase inicial de desarrollo. El avance del proyecto se gestiona mediante sprints semanales para asegurar un crecimiento modular y controlado.
+LexData tiene un **núcleo funcional de punta a punta**: CSV → cuarentena de datos inválidos → persistencia real en SQLite → reglas configurables + detección de anomalías → alertas persistidas → reporte exportable y dashboard de solo lectura.
 
-### Semana 1: Arquitectura y Configuración Base (Actual)
-- [x] Inicialización del repositorio Git y estructuración del portafolio.
-- [x] Configuración del entorno virtual (`venv`) y definición de dependencias base.
-- [x] Diseño de la arquitectura de software por capas y árbol de directorios.
-- [x] archivo Parseador definido.
-- [ ] Creación de scripts SQL iniciales (Modelado DDL para persistencia de datos).
-- [x] Configuración del punto de entrada de la aplicación (`main.py`) y testing de conexión.
+### Completado
+- [x] Configuración centralizada por variables de entorno
+- [x] Persistencia real en SQLite (schema, modelos, repositorios parametrizados)
+- [x] Cuarentena de datos inválidos con motivo de rechazo (sin coerción silenciosa a cero)
+- [x] Validación de ruta de entrada antes de tocar disco/base de datos
+- [x] Motor de reglas configurable (múltiples reglas, no una función fija)
+- [x] Primer detector de anomalías (outliers de monto por z-score)
+- [x] CLI con `argparse` (`--help`, `--export`) y logging estructurado
+- [x] Reporte de auditoría agregado, exportable a CSV
+- [x] Dashboard de solo lectura en Streamlit
+- [x] Suite de tests automatizados con `pytest`
 
-### Semana 2: Core del Sistema (Por Definir)
-*Las tareas específicas de esta fase se terminarán de detallar una vez completados los objetivos de la Semana 1, priorizando:*
-- [ ] Desarrollo y testing del Motor de Reglas en Python (Lógica de negocio).
-- [ ] Estructuración de los primeros módulos de la capa de Detección de Anomalías.
+### Pendiente / roadmap
+- [ ] Vectorizar la evaluación de reglas y el detector de anomalías (hoy es fila por fila; se justifica solo con volumen real de datos)
+- [ ] Ampliar el catálogo de reglas y algoritmos de detección de anomalías
+- [ ] Reglas administrables sin tocar código (hoy viven en `settings.py`)
+- [ ] Autenticación / multiusuario en el dashboard
+- [ ] Motor SQL alternativo (Postgres/MySQL) si el proyecto necesita concurrencia real más allá de SQLite
