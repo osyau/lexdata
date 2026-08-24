@@ -4,4 +4,5 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.3
 pytest==9.1.1
 six==1.17.0
+streamlit==1.62.0
 tzdata==2026.2
