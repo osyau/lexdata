@@ -1,11 +1,11 @@
-# LexData 🔍 | Auditoría Inteligente de Datos Empresariales
+# LexData | Auditoría Inteligente de Datos Empresariales
 LexData es una plataforma de software desarrollada en Python diseñada para la auditoría inteligente, análisis y detección de anomalías en grandes volúmenes de datos empresariales. El sistema integra principios de Ciencia de Datos, Estadística Aplicada y Motores de Reglas para identificar patrones irregulares, automatizar el control de calidad de la información y generar reportes analíticos de alto impacto.
 
 El proyecto está construido bajo una arquitectura modular por capas, priorizando el aislamiento de dependencias mediante entornos virtuales (`venv`) y un control de versiones estricto.
 
 ---
 
-## 🏗️ Arquitectura del Sistema (Capas)
+## Arquitectura del Sistema (Capas)
 Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexData** se estructura en las siguientes capas de software:
 
 *   **A. Capa de Base de Datos (DATABASE):** Persistencia y gestión estructurada de datos relacionales, utilizando operaciones SQL optimizadas (DDL, DML, TCL) para asegurar la integridad transaccional.
@@ -23,7 +23,7 @@ Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexDat
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 *   **Lenguaje Base:** Python 3.x
 *   **Gestión de Datos:** SQL Transaccional (PostgreSQL / MySQL / SQLite)
 *   **Core Científico:** Ciencia de Datos, Estadística Aplicada y Algoritmos de Detección
@@ -32,31 +32,32 @@ Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexDat
 
 ---
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 ```text
 	LEXDATA/
-		│
-		├── src/                    # código fuente de la app
-		│   ├── __init__.py
-		│   ├── database.py         # archivo databse
-		│   ├── parser.py           # archivo de procesamiento
-		│   │
-		│   ├── config/             # CARPETA Para conexiones y variables
-		│   │   └── __init__.py
-		│   │
-		│   └── core/               # CARPETA Para motor de reglas y anomalías
-		│       ├── __init__.py
-		│       ├── rules_engine.py
-		│       └── anomaly_detect.py
-		│
-		├── venv/                   # entorno virtual 
-		├── .gitignore              # Configuración de Git
-		├── main.py                 # archivo principal 
-		├── README.md               # documentación
-		└── requirements.txt        # dependencias 
+			│
+			├── data/                       # ← NUEVA: Carpeta para datos del proyecto
+			│   └── mock_transaction.csv    # Your mock file para probar el parser sin tocar la DB
+			│
+			├── src/                        # Todo el código fuente ejecutable
+			│   ├── __init__.py
+			│   ├── main.py                 
+			│   ├── config/                 
+			│   ├── core/                   
+			│   ├── database/               # Aquí va SOLO código de persistencia (scripts SQL, conexión)
+			│   └── utils/                  
+			│       ├── __init__.py
+			│       └── parser.py           # Leerá el CSV desde la carpeta data/
+			│
+			├── venv/                       
+			├── .env                        
+			├── .gitignore                  
+			├── README.md                   
+			├── requirements.txt            
+			└── run.py
 ```
 ---
-## 🚀 Instalación y Uso
+## Instalación y Uso
 
 ### Prerrequisitos
 * Python 3.10 o superior
@@ -81,19 +82,19 @@ Para garantizar la escalabilidad y el mantenimiento limpio del código, **LexDat
 
 ---
 
-## 📈 Estado del Proyecto & Roadmap
+## Estado del Proyecto & Roadmap
 
 Actualmente, **LexData** se encuentra en su fase inicial de desarrollo. El avance del proyecto se gestiona mediante sprints semanales para asegurar un crecimiento modular y controlado.
 
-### 🗓️ Semana 1: Arquitectura y Configuración Base (Actual)
+### Semana 1: Arquitectura y Configuración Base (Actual)
 - [x] Inicialización del repositorio Git y estructuración del portafolio.
 - [x] Configuración del entorno virtual (`venv`) y definición de dependencias base.
 - [x] Diseño de la arquitectura de software por capas y árbol de directorios.
 - [x] archivo Parseador definido.
 - [ ] Creación de scripts SQL iniciales (Modelado DDL para persistencia de datos).
-- [ ] Configuración del punto de entrada de la aplicación (`main.py`) y testing de conexión.
+- [x] Configuración del punto de entrada de la aplicación (`main.py`) y testing de conexión.
 
-### 🗓️ Semana 2: Core del Sistema (Por Definir)
+### Semana 2: Core del Sistema (Por Definir)
 *Las tareas específicas de esta fase se terminarán de detallar una vez completados los objetivos de la Semana 1, priorizando:*
 - [ ] Desarrollo y testing del Motor de Reglas en Python (Lógica de negocio).
 - [ ] Estructuración de los primeros módulos de la capa de Detección de Anomalías.
