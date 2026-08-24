@@ -1,0 +1,27 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Variables de entorno / secretos
+.env
+
+# Bases de datos locales
+*.db
+*.sqlite3
+
+# Empaquetado
+*.egg-info/
+build/
+dist/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

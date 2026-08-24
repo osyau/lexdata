@@ -1,8 +1,21 @@
-def evaluate_rule(datos_transaccion):
-    "evalua si una transaccion cumple con ciertas reglas de negocio. "
-    "por ahora, una regla de prueba: marcar como sospechoso si el monto es mayor a 200.00$"
-    #Regla de prueba basica usando el diccionario de pandas" 
-    monto = datos_transaccion.get('amount', 0.0)
-    if monto >200.0:
-        return True # cumple la regla, se dispara la alerta.
-    return False 
+_OPERADORES = {
+    '>': lambda valor, umbral: valor > umbral,
+    '<': lambda valor, umbral: valor < umbral,
+    '>=': lambda valor, umbral: valor >= umbral,
+    '<=': lambda valor, umbral: valor <= umbral,
+    '==': lambda valor, umbral: valor == umbral,
+    '!=': lambda valor, umbral: valor != umbral,
+}
+
+
+def evaluate_rules(datos_transaccion, reglas):
+    "evalua una transaccion contra una lista de reglas configurables (ver settings.RULES); retorna los nombres de las que se cumplen."
+    alertas = []
+    for regla in reglas:
+        valor = datos_transaccion.get(regla['field'])
+        if valor is None:
+            continue
+        comparador = _OPERADORES[regla['operator']]
+        if comparador(valor, regla['threshold']):
+            alertas.append(regla['name'])
+    return alertas
